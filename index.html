@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appel Ajax </title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<body>
+<h1>Employées</h1>
+<table id="table">
+    <tr>
+        <th>Id</th>
+        <th>Title</th>
+    </tr>
+</table>
+
+
+
+
+
+<script>
+
+    var tabData = [];
+    
+$.ajax({
+  method: "GET",
+  url: "https://jsonplaceholder.typicode.com/posts",
+  success : function(data){
+    $(data).each(function(i,element){
+        // var table = document.getElementById("table");
+        tabData.push(element);
+    });
+
+    PrintTable();
+
+
+  }
+});
+
+
+function deleteFunction(id){
+    tabData.splice(id,1);
+    PrintTable();
+}
+
+
+function PrintTable(){
+    var result = ''
+
+    for (let i = 0; i < tabData.length; i++) {
+        result += '<tr>' +
+            '<td>' + tabData[i].id + '</td>' +
+            '<td>' + tabData[i].title + '</td>'+
+            '<td><a href=" https://jsonplaceholder.typicode.com/posts/' +  tabData[i].id  +'">Fiche ?</a></td>'+
+            "<td><button onclick='deleteFunction("+i+")'> Delete ? </button></td>"+ 
+        '<tr>';
+        
+    }
+    
+    $('table').html(result);
+}
+
+
+
+
+
+</script>
+</body>
+</html>
