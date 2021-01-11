@@ -6,56 +6,91 @@
     <title>Appel Ajax </title>
 </head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 <body>
-<h1>Employées <button onclick='addFunction("+i+")'> Add ? </button></h1>
-<h2>Id Title</h2>
-
+<form id="myForm">
+    <input type="number" placeholder="User ID" id="userId"></input>
+    <input type="number" placeholder="Id" id="id"></input>
+    <input type="text" placeholder="Titre" id="titre"></input>
+    <input type="text" placeholder="Body" id="body" ></input>
+    <input type="button" id="add" class="add" value="Ajouter une donnée"></input>
+</form>
 <table id="table">
-
+    <thead>
+        <tr>
+            <th>User Id</th>
+            <th>Id</th>
+            <th>Titre</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>User Id</td>
+            <td>Id</td>
+            <td>Title</td>            
+        </tr>
+    </tbody>        
 </table>
 
-<script>
 
-    var tabData = [];
-    
-$.ajax({
-  method: "GET",
-  url: "https://jsonplaceholder.typicode.com/posts",
-  success : function(data){
-    $(data).each(function(i,element){
-        // var table = document.getElementById("table");
-        tabData.push(element);
-    });
-    PrintTable();
-  }
-});
-
-function deleteFunction(id){
-    tabData.splice(id,1);
-    PrintTable();
-}
-
-
-function addFunction(id){
-    tabData.push(id,1)
-    PrintTable()
-}
-
-function PrintTable(){
-    var result = ''
-
-    for (let i = 0; i < tabData.length; i++) {
-        result += '<tr>' +
-            '<td>' + tabData[i].id + '</td>' +
-            '<td>' + tabData[i].title + '</td>'+
-            '<td><a href=" https://jsonplaceholder.typicode.com/posts/' +  tabData[i].id  +'">Fiche ?</a></td>'+
-            "<td><button onclick='deleteFunction("+i+")'> Delete ? </button></td>"+ 
-        '<tr>';
-        
-    }
-    
-    $('table').html(result);
-}
-</script>
 </body>
+<script type ="text/javascript">
+
+    const fill = document.querySelector("#table > tbody");
+
+    //va chercher dans l'API le fichier sous format JSON
+    function loadData () {
+        const request = new XMLHttpRequest();
+
+        request.open("get","https://jsonplaceholder.typicode.com/posts")
+        request.onload = () => {
+            const json = JSON.parse(request.responseText);
+            populateTable(json);
+
+        };
+
+        request.send();
+    }
+
+    //remplissage du tableau 
+    function populateTable(json) {
+
+        //vide les données actuelles de la table
+        while (fill.firstChild){
+            fill.removeChild(fill.firstChild);
+        }
+
+        //va boucler pour chaque données du tableau et remplir les champs
+        json.forEach(function(data) {
+
+            var table = document.getElementById("table");
+                table.innerHTML +=
+                    '<tr id="'+data.id +'">' + 
+                        '<td>' +"User"+ " " + data.userId + '</td>' +
+                        '<td>' + data.id + '</td>' +
+                        '<td>' + data.title + '</td>' +
+                        //permet d'afficher la fiche d'un seul ID via l'API
+                        '<td ><button> <a href="https://jsonplaceholder.typicode.com/posts/'+ data.id +'">Fiche</a></button></td>'+
+                        '<td ><button onClick ="remove('+data.id+')" >Delete</button></td>'+
+                        
+                    '</tr>';
+            });
+
+    }
+
+    // au chargement de la page, rempli le tableau automatiquement sans avoir a apuyer sur un bouton
+    document.addEventListener("DOMContentLoaded", () => { loadData(); });
+
+    //fonction super courte, a revoir si il faut faire un appel API pour le delete
+    function remove(id) {
+        $('#' + id).remove();
+    }
+
+
+
+        $("#add").click(function () {                
+
+            $("#table>tbody:last").append("<tr><td>" + "User"+ " " +   $("#userId").val() + "</td><td>" + $("#id").val() + "</td><td>" + $("#titre").val() + "</td><td>" + $("#body").val() + "</td></tr>");
+        });
+</script>
 </html>
